@@ -1,116 +1,132 @@
-<?php
-// NAMA : NADIA KHOERUNISA
-// NIM  : 123456789
-// KELAS: 4C
-include "config.php"; ?>
+<?php include "config.php"; ?>
 <!DOCTYPE html>
 <html>
 
 <head>
 	<title>Hasil Pendaftaran</title>
-	<style>
-		body {
-			font-family: Arial, sans-serif;
-			background-color: #f5f6fa;
-			margin: 20px;
-		}
-
-		.container {
-			max-width: 900px;
-			margin: auto;
-			background: #fff;
-			padding: 20px;
-			border-radius: 8px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-		}
-
-		h2 {
-			color: #333;
-			text-align: center;
-		}
-
-		table {
-			border-collapse: collapse;
-			width: 100%;
-			margin-top: 15px;
-			background: #fff;
-		}
-
-		table th {
-			background-color: #007bff;
-			color: white;
-		}
-
-		table th,
-		table td {
-			border: 1px solid #ccc;
-			padding: 8px;
-			text-align: center;
-		}
-
-		nav ul {
-			list-style: none;
-			padding: 0;
-			text-align: center;
-		}
-
-		nav ul li {
-			display: inline;
-			margin-right: 15px;
-		}
-
-		nav ul li a {
-			text-decoration: none;
-			color: #fff;
-			background-color: #007bff;
-			padding: 6px 12px;
-			border-radius: 4px;
-		}
-
-		nav ul li a:hover {
-			background-color: #0056b3;
-		}
-	</style>
+	<!-- Bootstrap -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- Chart.js -->
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body>
-	<div class="container">
-		<h2>Data Pendaftaran Beasiswa</h2>
-		<nav>
-			<ul>
-				<li><a href="index.php">Beranda</a></li>
-				<li><a href="daftar.php">Daftar Beasiswa</a></li>
-				<li><a href="hasil.php">Lihat Hasil</a></li>
+<body class="bg-light">
+	<div class="container mt-4 p-4 bg-white rounded shadow">
+		<h2 class="text-center mb-4">Data Pendaftaran Beasiswa</h2>
+		<!-- Navbar -->
+		<nav class="mb-3">
+			<ul class="nav justify-content-center">
+				<li class="nav-item"><a class="nav-link btn btn-primary me-2" href="index.php">Beranda</a></li>
+				<li class="nav-item"><a class="nav-link btn btn-success me-2" href="daftar.php">Daftar Beasiswa</a></li>
+				<li class="nav-item"><a class="nav-link btn btn-info" href="hasil.php">Lihat Hasil</a></li>
 			</ul>
 		</nav>
-		<table>
-			<tr>
-				<th>Nama</th>
-				<th>Email</th>
-				<th>No HP</th>
-				<th>Semester</th>
-				<th>IPK</th>
-				<th>Beasiswa</th>
-				<th>Berkas</th>
-				<th>Status</th>
-			</tr>
-			<?php
-			$res = $conn->query("SELECT * FROM pendaftaran");
-			while ($row = $res->fetch_assoc()) {
-				echo "<tr>
-            <td>{$row['nama']}</td>
-            <td>{$row['email']}</td>
-            <td>{$row['no_hp']}</td>
-            <td>{$row['semester']}</td>
-            <td>{$row['ipk']}</td>
-            <td>{$row['beasiswa']}</td>
-            <td><a href='upload/{$row['file_berkas']}'>Download</a></td>
-            <td>{$row['status_ajuan']}</td>
-        </tr>";
-			}
-			?>
+
+		<!-- Tabel Data -->
+		<table class="table table-striped table-bordered">
+			<thead class="table-primary">
+				<tr>
+					<th>Nama</th>
+					<th>Email</th>
+					<th>No HP</th>
+					<th>Semester</th>
+					<th>IPK</th>
+					<th>Beasiswa</th>
+					<th>Berkas</th>
+					<th>Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				$res = $conn->query("SELECT * FROM pendaftaran");
+				while ($row = $res->fetch_assoc()) {
+					echo "<tr>
+                <td>{$row['nama']}</td>
+                <td>{$row['email']}</td>
+                <td>{$row['no_hp']}</td>
+                <td>{$row['semester']}</td>
+                <td>{$row['ipk']}</td>
+                <td>{$row['beasiswa']}</td>
+                <td><a href='upload/{$row['file_berkas']}' class='btn btn-sm btn-outline-primary'>Download</a></td>
+                <td>{$row['status_ajuan']}</td>
+            </tr>";
+				}
+				?>
+			</tbody>
 		</table>
+
+		<!-- Grafik Monitoring Beasiswa -->
+		<h4 class="text-center mt-5">Monitoring Jumlah Pendaftar Berdasarkan Jenis Beasiswa</h4>
+		<canvas id="grafikBeasiswa" height="120"></canvas>
+
+		<!-- Grafik Monitoring Semester -->
+		<h4 class="text-center mt-5">Monitoring Jumlah Pendaftar Berdasarkan Semester</h4>
+		<canvas id="grafikSemester" height="120"></canvas>
 	</div>
+
+	<?php
+	// Data jumlah pendaftar per jenis beasiswa
+	$dataJenis = $conn->query("SELECT beasiswa, COUNT(*) as total FROM pendaftaran GROUP BY beasiswa");
+	$labelsJenis = [];
+	$valuesJenis = [];
+	while ($row = $dataJenis->fetch_assoc()) {
+		$labelsJenis[] = $row['beasiswa'];
+		$valuesJenis[] = $row['total'];
+	}
+
+	// Data jumlah pendaftar per semester
+	$dataSemester = $conn->query("SELECT semester, COUNT(*) as total FROM pendaftaran GROUP BY semester ORDER BY semester");
+	$labelsSemester = [];
+	$valuesSemester = [];
+	while ($row = $dataSemester->fetch_assoc()) {
+		$labelsSemester[] = 'Semester ' . $row['semester'];
+		$valuesSemester[] = $row['total'];
+	}
+	?>
+	<script>
+		// Grafik Beasiswa
+		new Chart(document.getElementById('grafikBeasiswa'), {
+			type: 'bar',
+			data: {
+				labels: <?php echo json_encode($labelsJenis); ?>,
+				datasets: [{
+					label: 'Jumlah Pendaftar',
+					data: <?php echo json_encode($valuesJenis); ?>,
+					backgroundColor: ['#007bff', '#28a745'],
+					borderWidth: 1
+				}]
+			},
+			options: {
+				scales: {
+					y: {
+						beginAtZero: true
+					}
+				}
+			}
+		});
+
+		// Grafik Semester
+		new Chart(document.getElementById('grafikSemester'), {
+			type: 'bar',
+			data: {
+				labels: <?php echo json_encode($labelsSemester); ?>,
+				datasets: [{
+					label: 'Jumlah Pendaftar',
+					data: <?php echo json_encode($valuesSemester); ?>,
+					backgroundColor: '#ffc107',
+					borderWidth: 1
+				}]
+			},
+			options: {
+				scales: {
+					y: {
+						beginAtZero: true
+					}
+				}
+			}
+		});
+	</script>
 </body>
 
 </html>

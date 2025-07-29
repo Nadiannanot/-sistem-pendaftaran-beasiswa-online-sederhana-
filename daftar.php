@@ -4,129 +4,71 @@
 
 <head>
 	<title>Form Pendaftaran Beasiswa</title>
-	<style>
-		body {
-			font-family: Arial, sans-serif;
-			background-color: #f5f6fa;
-			margin: 20px;
-		}
-
-		.container {
-			max-width: 500px;
-			margin: auto;
-			background: #fff;
-			padding: 20px;
-			border-radius: 8px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-		}
-
-		h2 {
-			color: #333;
-			text-align: center;
-		}
-
-		label {
-			display: block;
-			margin-top: 10px;
-		}
-
-		input,
-		select {
-			padding: 8px;
-			margin-top: 5px;
-			width: 100%;
-			border: 1px solid #ccc;
-			border-radius: 4px;
-		}
-
-		button {
-			margin-top: 15px;
-			width: 100%;
-			background: #28a745;
-			color: #fff;
-			border: none;
-			padding: 10px;
-			border-radius: 4px;
-			cursor: pointer;
-		}
-
-		button:hover {
-			background: #218838;
-		}
-
-		nav ul {
-			list-style: none;
-			padding: 0;
-			text-align: center;
-			margin-bottom: 20px;
-		}
-
-		nav ul li {
-			display: inline;
-			margin-right: 15px;
-		}
-
-		nav ul li a {
-			text-decoration: none;
-			color: #fff;
-			background-color: #007bff;
-			padding: 6px 12px;
-			border-radius: 4px;
-		}
-
-		nav ul li a:hover {
-			background-color: #0056b3;
-		}
-
-		.msg {
-			text-align: center;
-			margin-top: 15px;
-			font-weight: bold;
-		}
-	</style>
+	<!-- Bootstrap -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
-<body>
-	<div class="container">
-		<h2>Form Pendaftaran Beasiswa</h2>
-		<nav>
-			<ul>
-				<li><a href="index.php">Beranda</a></li>
-				<li><a href="daftar.php">Daftar Beasiswa</a></li>
-				<li><a href="hasil.php">Lihat Hasil</a></li>
+<body class="bg-light">
+	<div class="container mt-4 p-4 bg-white rounded shadow" style="max-width:600px;">
+		<h2 class="text-center mb-4">Form Pendaftaran Beasiswa</h2>
+		<!-- Navbar -->
+		<nav class="mb-3">
+			<ul class="nav justify-content-center">
+				<li class="nav-item"><a class="nav-link btn btn-primary me-2" href="index.php">Pilihan Beasiswa</a></li>
+				<li class="nav-item"><a class="nav-link btn btn-success me-2" href="daftar.php">Daftar</a></li>
+				<li class="nav-item"><a class="nav-link btn btn-info" href="hasil.php">Hasil</a></li>
 			</ul>
 		</nav>
 		<?php $ipk = 3.4; ?>
 		<form method="POST" enctype="multipart/form-data">
-			<label>Nama:</label>
-			<input type="text" name="nama" required>
+			<div class="mb-3">
+				<label class="form-label">Masukkan Nama:</label>
+				<input type="text" class="form-control" name="nama" required>
+			</div>
 
-			<label>Email:</label>
-			<input type="email" name="email" required>
+			<div class="mb-3">
+				<label class="form-label">Masukkan Email:</label>
+				<input type="email" class="form-control" name="email" required>
+			</div>
 
-			<label>No. HP:</label>
-			<input type="number" name="no_hp" required>
+			<div class="mb-3">
+				<label class="form-label">No. HP:</label>
+				<input type="number" class="form-control" name="no_hp" required>
+			</div>
 
-			<label>Semester:</label>
-			<select name="semester">
-				<?php for ($i = 1; $i <= 8; $i++) echo "<option>$i</option>"; ?>
-			</select>
+			<div class="mb-3">
+				<label class="form-label">Semester saat ini:</label>
+				<select class="form-select" name="semester">
+					<?php for ($i = 1; $i <= 8; $i++) echo "<option>$i</option>"; ?>
+				</select>
+			</div>
 
-			<label>IPK:</label>
-			<input type="text" value="<?= $ipk ?>" readonly>
+			<div class="mb-3">
+				<label class="form-label">IPK Terakhir:</label>
+				<input type="text" class="form-control" value="<?= $ipk ?>" readonly>
+			</div>
 
 			<?php if ($ipk >= 3): ?>
-				<label>Pilih Beasiswa:</label>
-				<select name="beasiswa">
-					<option value="Akademik">Beasiswa Akademik</option>
-					<option value="Non-Akademik">Beasiswa Non-Akademik</option>
-				</select>
+				<div class="mb-3">
+					<label class="form-label">Pilih Beasiswa:</label>
+					<select class="form-select" name="beasiswa">
+						<option value="Akademik">Beasiswa Akademik</option>
+						<option value="Non-Akademik">Beasiswa Non-Akademik</option>
+					</select>
+				</div>
 
-				<label>Upload Berkas:</label>
-				<input type="file" name="file_berkas" required>
-				<button type="submit" name="daftar">Daftar</button>
+				<div class="mb-3">
+					<label class="form-label">Upload Berkas Syarat:</label>
+					<input type="file" class="form-control" name="file_berkas" required>
+				</div>
+
+				<div class="d-flex gap-2">
+					<button type="submit" name="daftar" class="btn btn-success w-50">Daftar</button>
+					<a href="index.php" class="btn btn-danger w-50">Cancel</a>
+				</div>
 			<?php else: ?>
-				<p style="color:red;">IPK Anda di bawah 3. Tidak bisa mendaftar.</p>
+				<p class="text-danger text-center">IPK Anda di bawah 3. Tidak bisa mendaftar.</p>
 			<?php endif; ?>
 		</form>
 
@@ -142,11 +84,11 @@
 			move_uploaded_file($tmp, "upload/" . $file);
 
 			$sql = "INSERT INTO pendaftaran (nama,email,no_hp,semester,ipk,beasiswa,file_berkas) 
-            VALUES ('$nama','$email','$no_hp','$semester','$ipk','$beasiswa','$file')";
+                VALUES ('$nama','$email','$no_hp','$semester','$ipk','$beasiswa','$file')";
 			if ($conn->query($sql)) {
-				echo "<p class='msg' style='color:green;'>Pendaftaran berhasil!</p>";
+				echo "<div class='alert alert-success text-center mt-3'>Pendaftaran berhasil!</div>";
 			} else {
-				echo "<p class='msg' style='color:red;'>Error: " . $conn->error . "</p>";
+				echo "<div class='alert alert-danger text-center mt-3'>Error: " . $conn->error . "</div>";
 			}
 		}
 		?>
@@ -159,3 +101,4 @@
 // NAMA : NADIA KHOERUNISA
 // NIM  : 123456789
 // KELAS: 4C
+?>
